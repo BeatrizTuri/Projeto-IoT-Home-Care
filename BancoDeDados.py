@@ -36,22 +36,61 @@ class BancoDeDados:
     #Inserção na tabela dispositivos         
     def inserir_dispositivos(self, imei, data_fabricacao):
         
+        #Conexão com o banco de dados
+        self.conexao = mysql.connector.connect(
+            host=self.host,
+            user=self.usuario,
+            password=self.senha,
+            database=self.banco
+        )
+        
         cursor = self.conexao.cursor()
         
         query = "INSERT INTO dispositivo (imei, data_fabricacao) VALUES (%s, %s)"
         cursor.execute(query, (imei, data_fabricacao))
+
+        #Confirmação da inserção de dados no banco
+        self.conexao.commit()
         
-        cursor.close()
+        #print("Dispositivo inserido com sucesso na tabela dispositivo")
+        cursor.close()  
         
     #Inserção na tabela mensagens (id_erro é auto incremento)
     def inserir_erro(self, tipo_erro, fk_dispositivo_erro, data_erro):
         
+        #Conexão com o banco de dados
+        self.conexao = mysql.connector.connect(
+            host=self.host,
+            user=self.usuario,
+            password=self.senha,
+            database=self.banco
+        )
+        
         cursor = self.conexao.cursor()
+        
+        #Recuperação do IMEI do dispositivo
+        query = "SELECT imei FROM dispositivo WHERE imei = %s"
+        cursor.execute(query, (fk_dispositivo_erro,))
+        fk_dispositivo_erro = cursor.fetchone[0]
+        
+        if fk_dispositivo_erro:
+            
+            fk_dispositivo_erro = fk_dispositivo_error.fetchone[0] 
+            
+        else: 
+            print("Dispositivo não encontrado")
+                
+             
         
         query = "INSERT INTO erro (tipo_erro, fk_dispositivo_erro, data_erro) VALUES (%s, %s, %s)"
         cursor.execute(query, (tipo_erro, fk_dispositivo_erro, data_erro))
         
+        self.conexao.commit()
+        print("Erro inserido com sucesso na tabela erro")
+        
         cursor.close()
+        
+    '''
     
     #Inserção na tabela mensagens (id_mensagem é auto incremento)   
     def inserir_mensagem(self, tipo_mensagem, fk_dispositivo_mensagem, data_mensagem):
@@ -61,7 +100,12 @@ class BancoDeDados:
         query = "INSERT INTO mensagem (tipo_mensagem, fk_dispositivo_mensagem, data_mensagem) VALUES (%s, %s, %s)"
         cursor.execute(query, (tipo_mensagem, fk_dispositivo_mensagem, data_mensagem))
         
-        cursor.close()
+        cursor.close()'''
+        
+if __name__ == "__main__":
+    bd = BancoDeDados()
+    bd.inserir_erro("Erro de conexão", 123456789, "2021-05-20 12:00:00")
+    
 
 
 
