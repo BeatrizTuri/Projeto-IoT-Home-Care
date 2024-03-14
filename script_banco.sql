@@ -9,7 +9,7 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `HomeCare`.`dispositivo` (
   `imei` INT NOT NULL,
-  `id` INT NULL,
+  `data_fabricacao` DATE NULL,
   PRIMARY KEY (`imei`),
   UNIQUE INDEX `imei_UNIQUE` (`imei` ASC) VISIBLE)
 ENGINE = InnoDB;
