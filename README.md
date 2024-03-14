@@ -7,28 +7,28 @@ Este projeto é um sistema de IoT desenvolvido especificamente para o setor de h
 ## Instrução de compilação 
  1- Para poder executar o código é preciso que você tenha instalado o mysql com todas as suas pendências. Acesse o seu root utilizando o comando abaixo:
 
- '''sql
+ ```sql
  mysql -u root -p
- '''
+ ```
 
  Depois basta inserir a sua senha, se tudo der certo você estara logado no banco de dados.
 
  2- A seguir é preciso que você execute as seguintes linhas de códigos:
 
- '''sql
+ ```sql
 CREATE USER IF NOT EXISTS 'adm_Deloitte'@'localhost' IDENTIFIED BY 'Deloitte'; 
 GRANT ALL PRIVILEGES ON * . * TO 'adm_Deloitte'@'localhost'; 
 FLUSH PRIVILEGES;
- '''
+ ```
 
  Desta forma você irá criar um novo usuário, cujo será usado para realizar a conexão.
 
  3- A ultima etapa é executar as linhas que irão criar o database:
 
- '''sql
+ ```sql
  CREATE SCHEMA IF NOT EXISTS `homecare` DEFAULT CHARACTER SET utf8 ;
 USE `homecare` ;
-'''
+```
 Agora você esta apto a rodar o código.
 
 
