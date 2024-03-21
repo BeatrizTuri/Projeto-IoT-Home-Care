@@ -4,12 +4,12 @@ import time
 from bancoDeDados import *
 
 """
-    Método q
+    Método 
 """
 def simular_maquinas():
     lista_de_IMEIS = []
     lista_de_tipo_mensagem = []
-    for i in range(1,1001):
+    for i in range(1,10):
         IMEI = int(random.randint(10000000,99999999))
         lista_de_IMEIS.append(IMEI)
         data_de_fabricacao = datetime(random.randint(2015, 2024), random.randint(1, 12), random.randint(1, 28), random.randint(0, 23), random.randint(0, 59), random.randint(0, 59))
@@ -21,6 +21,7 @@ def simular_maquinas():
         lista_de_tipo_mensagem.append(tipo_mensagem)
 
         bd.inserir_dispositivos(IMEI, str(data_de_fabricacao))
+        
 
         if tipo_de_erro != None:
             bd.inserir_erro(tipo_de_erro, IMEI, str(data_do_erro))
@@ -43,6 +44,7 @@ def simular_maquinas():
                 tipo_mensagem = "timebased"
                 bd.atualiza_mensagem(lista_de_IMEIS[imei], tipo_mensagem)
             
+            bd.dispositivos_online_30m()
             lista_de_tipo_mensagem[imei] = tipo_mensagem
 
             

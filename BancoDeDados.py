@@ -37,7 +37,8 @@ class BancoDeDados:
                 cursor.execute(arquivoBD.read(), multi=True)
                 
                 print("Tabelas criadas no banco de dados")
-
+                
+            #Fechamento do cursor
             cursor.close()
         
         #Impressão de erro caso a conexão com o banco de dados falhe
@@ -78,7 +79,8 @@ class BancoDeDados:
             pass
   
     
-    """método para inserir erros na tabela erro, onde é passado o tipo de erro, o IMEI do dispositivo e a data do erro, 
+    """
+    método para inserir erros na tabela erro, onde é passado o tipo de erro, o IMEI do dispositivo e a data do erro, 
     não é preciso passar o id_erro pois ele é auto incremento.
     """
     def inserir_erro(self, tipo_erro, fk_dispositivo_erro, data_erro):
@@ -97,7 +99,9 @@ class BancoDeDados:
         #Recuperação do IMEI do dispositivo
         query = "SELECT imei FROM dispositivo WHERE imei = %s"
         cursor.execute(query, (fk_dispositivo_erro,))
-        imei_select = cursor.fetchone() #Recuperação da proxima linha do resultado da consulta e atribuição a variavel imei_select
+        
+        #Recuperação da proxima linha do resultado da consulta e atribuição a variavel imei_select
+        imei_select = cursor.fetchone() 
 
         #Verificação se o dispositivo foi encontrado
         if imei_select:
@@ -138,7 +142,9 @@ class BancoDeDados:
         #Recuperação do IMEI do dispositivo
         query = "SELECT imei FROM dispositivo WHERE imei = %s"
         cursor.execute(query, (fk_dispositivo_mensagem,))
-        imei_select = cursor.fetchone() #Recuperação da proxima linha do resultado da consulta e atribuição a variavel imei_select
+        
+        #Recuperação da proxima linha do resultado da consulta e atribuição a variavel imei_select
+        imei_select = cursor.fetchone() 
         
         #Verificação se o dispositivo foi encontrado
         if imei_select:
@@ -154,6 +160,7 @@ class BancoDeDados:
         
         #Confirmação da ação no banco
         self.conexao.commit()
+        
         #Fechamento do cursor
         cursor.close()
 
@@ -177,7 +184,9 @@ class BancoDeDados:
         #Recuperação dos dispositivos cadastrados
         query = "SELECT * FROM dispositivo"
         cursor.execute(query)
-        dispositivos = cursor.fetchall() #Recuperação de todas as linhas do resultado da consulta e atribuição a variavel dispositivos
+        
+        #Recuperação de todas as linhas do resultado da consulta e atribuição a variavel dispositivos
+        dispositivos = cursor.fetchall() 
         
         #Fechamento do cursor
         cursor.close() 
@@ -189,7 +198,7 @@ class BancoDeDados:
     """
     Método para retornar os erros cadastrados na tabela erro
     """
-    def retorna_erro(self):
+    def retorna_erros(self):
         
         #Conexão com o banco de dados
         self.conexao = mysql.connector.connect(
@@ -205,7 +214,9 @@ class BancoDeDados:
         #Recuperação dos erros cadastrados
         query = "SELECT * FROM erro"
         cursor.execute(query)
-        erros = cursor.fetchall() #Recuperação de todas as linhas do resultado da consulta e atribuição a variavel erros
+        
+        #Recuperação de todas as linhas do resultado da consulta e atribuição a variavel erros
+        erros = cursor.fetchall() 
 
         #Fechamento do cursor
         cursor.close()
@@ -217,7 +228,7 @@ class BancoDeDados:
     """
     Método para retornar as mensagens cadastradas na tabela mensagem
     """   
-    def retorna_mensagem(self):
+    def retorna_mensagens(self):
         
         #Conexão com o banco de dados
         self.conexao = mysql.connector.connect(
@@ -233,7 +244,9 @@ class BancoDeDados:
         #Recuperação das mensagens cadastradas
         query = "SELECT * FROM mensagem"
         cursor.execute(query)
-        mensagens = cursor.fetchall() #Recuperação de todas as linhas do resultado da consulta e atribuição a variavel mensagens
+        
+        #Recuperação de todas as linhas do resultado da consulta e atribuição a variavel mensagens
+        mensagens = cursor.fetchall()
       
         #Fechamento do cursor
         cursor.close()
@@ -324,7 +337,7 @@ class BancoDeDados:
         
     
     """
-    Método para alterar a mensagem de dispositivos cadastrados na tabela mensagem através do fk_dispositivo_mensagem(imei)
+    Método para alterar a mensagem de dispositivos cadastrados na tabela mensagem através do imei do dispositivo e o tipo da mensagem
     """ 
     def atualiza_mensagem(self, fk_dispositivo_mensagem, tipo_mensagem): 
         #Conexão com o banco de dados
@@ -438,9 +451,6 @@ class BancoDeDados:
         #Atribuição da data atual
         data_atual = datetime.now()
         
-        #Criação de uma variável para armazenar a data 24 horas atrás
-        menos_24_horas = data_atual - timedelta(hours=24)
-        
         #Recuperação dos dispositivos que estão sem reportar
         query ="SELECT DISTINCT fk_dispositivo_mensagem FROM mensagem"
         cursor.execute(query)
@@ -455,6 +465,8 @@ class BancoDeDados:
         #Verificação do tempo que os dispositivos estão 
         for dispositivo in dispositivos:
             fk_dispositivo_mensagem = dispositivo[0]
+            
+            #Recuperação da última mensagem do dispositivo
             ultima_mensagem = self.ultima_mensagem(fk_dispositivo_mensagem)[0]
 
             #Cálculo do tempo que o dispositivo está sem reportar
@@ -463,11 +475,13 @@ class BancoDeDados:
             #Verificação do status do dispositivo
             if tempo_sem_reportar > timedelta(hours=24):
                 status = "critical"
+                
                 #Adição dos resultados a lista
                 resultados.append((fk_dispositivo_mensagem, status, (tempo_sem_reportar.total_seconds()/ 60)))
               
             elif timedelta(hours=24) >= tempo_sem_reportar > timedelta(seconds=31):
                 status = "warning"
+                
                 #Adição dos resultados a lista
                 resultados.append((fk_dispositivo_mensagem, status, (tempo_sem_reportar.total_seconds()/ 60)))     
         
@@ -495,17 +509,17 @@ class BancoDeDados:
         cursor = conexao.cursor() 
         
         #Recuperação dos dispositivos que estão ligados
-        query = "SELECT fk_dispositivo_mensagem FROM mensagem WHERE tipo_mensagem IN ('power_on', 'timebased') AND fk_dispositivo_mensagem NOT IN (SELECT fk_dispositivo_mensagem FROM mensagem WHERE tipo_mensagem = 'poweroff')"
+        query = "SELECT DISTINCT fk_dispositivo_mensagem FROM mensagem WHERE tipo_mensagem IN ('power_on', 'timebased')"
         cursor.execute(query)
         
-        #Recuperação de todas as linhas do resultado da consulta e atribuição a variavel dispositivos_ligados
+        #Atribuição de todas as linhas do resultado da consulta e atribuição a variavel dispositivos_ligados
         dispositivos_ligados = len(cursor.fetchall())
-        
+    
         #Recuperação dos dispositivos que estão desligados
-        query = "SELECT fk_dispositivo_mensagem FROM mensagem WHERE tipo_mensagem IN 'poweroff' AND fk_dispositivo_mensagem NOT IN (SELECT fk_dispositivo_mensagem FROM mensagem WHERE tipo_mensagem IN ('power_on', 'timebased'))"
+        query = "SELECT DISTINCT fk_dispositivo_mensagem FROM mensagem WHERE tipo_mensagem = 'power_off'" 
         cursor.execute(query)
         
-        #Recuperação de todas as linhas do resultado da consulta e atribuição a variavel dispositivos_desligados
+        #Atribuição de todas as linhas do resultado da consulta e atribuição a variavel dispositivos_desligados
         dispositivos_desligados = len(cursor.fetchall())
         
         #Definição dos rótulos do gráfico
@@ -515,7 +529,8 @@ class BancoDeDados:
         values = [dispositivos_ligados, dispositivos_desligados]
         
         #Criação do gráfico
-        plt.bar(labels, values)
+        colors = ['blue', 'red']
+        plt.bar(labels, values, color=colors)
         plt.xlabel('Estado dos Dispositivos')
         plt.ylabel('Quantidade')
         plt.title('Quantidade de Dispositivos Ligados e Desligados')
@@ -526,7 +541,7 @@ class BancoDeDados:
         #Fechamento do cursor
         cursor.close()
 
-        #Retorno do nome do arquivo gerado
+        #Retorno do arquivo gerado
         return 'grafico_equipamentos.png'
     
     
