@@ -1,6 +1,7 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import mysql.connector 
 from mysql.connector import Error
+import matplotlib.pyplot as plt
 
 
 """
@@ -354,7 +355,7 @@ class BancoDeDados:
     """
     método para retornar os dispositivos que estão online (ha 30 minutos enviando mensagens)
     """
-    def dispositivos_online_30m(self, tipo_mensagem,):
+    def dispositivos_que_reportam(self):
         
         #Conexão com o banco de dados
         self.conexao = mysql.connector.connect(
@@ -371,25 +372,58 @@ class BancoDeDados:
         data_atual = datetime.now()
         
         #Criação de uma variavel para armazenar a data atual menos 30 minutos
-        menos_30_minutos = data_atual - datetime.timedelta(minutes=30)
+        menos_30_minutos = data_atual - timedelta(minutes=30)
         
         #Recuperação dos dispositivos que estão online
         query = "SELECT fk_dispositivo_mensagem FROM mensagem WHERE data_mensagem > %s AND tipo_mensagem = %s"
-        cursor.execute(query, (menos_30_minutos, tipo_mensagem))
+        cursor.execute(query, (menos_30_minutos, 'timebased'))
         
         #Recuperação de todas as linhas do resultado da consulta e atribuição a variavel dispositivos
-        dispositivos_on = cursor.fetchall() 
+        dispositivos_on = cursor.fetchall()
+        
+        #Fechamento do cursor
+        cursor.close()
         
         #Retorno dos dispositivos que estão online
-        return dispositivos_on
+        return print(dispositivos_on)
     
-    
+
+    """
+    Método para retorna a última mensagem de um dispositivo através do IMEI
+    """
+    def ultima_mensagem(self, fk_dispositivo_mensagem):
+        
+        #Conexão com o banco de dados
+        conexao = mysql.connector.connect(
+            host=self.host,
+            user=self.usuario,
+            password=self.senha,
+            database=self.banco
+        )
+        
+        #Criação do cursor
+        cursor = conexao.cursor()
+        
+        #Recuperação da última mensagem do dispositivo
+        query = "SELECT data_mensagem FROM mensagem WHERE fk_dispositivo_mensagem = %s ORDER BY data_mensagem DESC LIMIT 1"
+        cursor.execute(query, (fk_dispositivo_mensagem,))
+        
+        #Recuperação da proxima linha do resultado da consulta e atribuição a variavel ultima_mensagem
+        ultima_mensagem = cursor.fetchone()
+        
+        #Fechamento do cursor
+        cursor.close()
+        
+        #Retorno da última mensagem do dispositivo
+        return ultima_mensagem
+
+
     """
     Método para exibir todos os equipamentos que não estão reportando e 
     com um status indicando o tempo que um determinado equipamento não reporta dados.
     (24 horas sem reportar: warning, mais de 24 horas sem reportar: critical)
     """   
-    def dispositivos_offline(self, tipo_mensagem):
+    def dispositivos_que_nao_reportam(self):
         #Conexão com o banco de dados
         conexao = mysql.connector.connect(
             host=self.host,
@@ -405,11 +439,11 @@ class BancoDeDados:
         data_atual = datetime.now()
         
         #Criação de uma variável para armazenar a data 24 horas atrás
-        menos_24_horas = data_atual - datetime.timedelta(hours=24)
+        menos_24_horas = data_atual - timedelta(hours=24)
         
-        #Recuperação dos dispositivos que estão offline há mais de 24 horas e menos de 24 horas
-        query = "SELECT fk_dispositivo_mensagem FROM mensagem WHERE tipo_mensagem = 'poweroff' AND fk_dispositivo_mensagem NOT IN (SELECT fk_dispositivo_mensagem FROM mensagem WHERE tipo_mensagem = %s)"
-        cursor.execute(query, (tipo_mensagem, menos_24_horas))
+        #Recuperação dos dispositivos que estão sem reportar
+        query ="SELECT DISTINCT fk_dispositivo_mensagem FROM mensagem"
+        cursor.execute(query)
         
         #Atribuição de todas as linhas do resultado da consulta a variável dispositivos
         dispositivos = cursor.fetchall()
@@ -417,34 +451,39 @@ class BancoDeDados:
         #Criação de uma lista para armazenar os resultados
         resultados = []
         
-        #Verificação do tempo que os dispositivos estão offline
+        
+        #Verificação do tempo que os dispositivos estão 
         for dispositivo in dispositivos:
-            #
-            fk_dispositivo, ultima_mensagem = dispositivo
+            fk_dispositivo_mensagem = dispositivo[0]
+            ultima_mensagem = self.ultima_mensagem(fk_dispositivo_mensagem)[0]
 
-            #Cálculo do tempo que o dispositivo está offline
+            #Cálculo do tempo que o dispositivo está sem reportar
             tempo_sem_reportar = data_atual - ultima_mensagem
             
-            if tempo_sem_reportar > datetime.timedelta(hours=24):
+            #Verificação do status do dispositivo
+            if tempo_sem_reportar > timedelta(hours=24):
                 status = "critical"
-                
-            else:
+                #Adição dos resultados a lista
+                resultados.append((fk_dispositivo_mensagem, status, (tempo_sem_reportar.total_seconds()/ 60)))
+              
+            elif timedelta(hours=24) >= tempo_sem_reportar > timedelta(seconds=31):
                 status = "warning"
-            
-            resultados.append((fk_dispositivo, status, tempo_sem_reportar))
+                #Adição dos resultados a lista
+                resultados.append((fk_dispositivo_mensagem, status, (tempo_sem_reportar.total_seconds()/ 60)))     
         
-      
+        #Fechamento do cursor
         cursor.close()
-    
-        return resultados
+
+        #Retorno dos resultados
+        return print(resultados)
         
         
     """
     Método para exibir um gráfico mostrando todos os equipamentos ligados e todos os equipamentos desligados 
     (equipamentos que emitiram um poweroff como última mensagem).
     """
-    def grafico_equipamentos(self, tipo_mensagem):  
-        # Conexão com o banco de dados
+    def grafico_equipamentos(self):  
+        #Conexão com o banco de dados
         conexao = mysql.connector.connect(
             host=self.host,
             user=self.usuario,
@@ -456,14 +495,45 @@ class BancoDeDados:
         cursor = conexao.cursor() 
         
         #Recuperação dos dispositivos que estão ligados
-        query = "SELECT fk_dispositivo_mensagem FROM mensagem WHERE tipo_mensagem = %s AND fk_dispositivo_mensagem NOT IN (SELECT fk_dispositivo_mensagem FROM mensagem WHERE tipo_mensagem = 'poweroff')"
-        cursor.execute(query, (tipo_mensagem,))
-        dispositivos_ligados = cursor.fetchall()
+        query = "SELECT fk_dispositivo_mensagem FROM mensagem WHERE tipo_mensagem IN ('power_on', 'timebased') AND fk_dispositivo_mensagem NOT IN (SELECT fk_dispositivo_mensagem FROM mensagem WHERE tipo_mensagem = 'poweroff')"
+        cursor.execute(query)
+        
+        #Recuperação de todas as linhas do resultado da consulta e atribuição a variavel dispositivos_ligados
+        dispositivos_ligados = len(cursor.fetchall())
         
         #Recuperação dos dispositivos que estão desligados
-        query = "SELECT fk_dispositivo_mensagem FROM mensagem WHERE tipo_mensagem = 'poweroff' AND fk_dispositivo_mensagem NOT IN (SELECT fk_dispositivo_mensagem FROM mensagem WHERE tipo_mensagem = %s)"
-        cursor.execute(query, (tipo_mensagem))
-        dispositivos_desligados = cursor.fetchall()
+        query = "SELECT fk_dispositivo_mensagem FROM mensagem WHERE tipo_mensagem IN 'poweroff' AND fk_dispositivo_mensagem NOT IN (SELECT fk_dispositivo_mensagem FROM mensagem WHERE tipo_mensagem IN ('power_on', 'timebased'))"
+        cursor.execute(query)
+        
+        #Recuperação de todas as linhas do resultado da consulta e atribuição a variavel dispositivos_desligados
+        dispositivos_desligados = len(cursor.fetchall())
+        
+        #Definição dos rótulos do gráfico
+        labels = ['Dispositivos ligados', 'Dispositivos desligados']
+        
+        #Definição dos valores do gráfico
+        values = [dispositivos_ligados, dispositivos_desligados]
+        
+        #Criação do gráfico
+        plt.bar(labels, values)
+        plt.xlabel('Estado dos Dispositivos')
+        plt.ylabel('Quantidade')
+        plt.title('Quantidade de Dispositivos Ligados e Desligados')
+
+        #Salvamento do gráfico em um arquivo
+        plt.savefig('grafico_equipamentos.png')
+        
+        #Fechamento do cursor
+        cursor.close()
+
+        #Retorno do nome do arquivo gerado
+        return 'grafico_equipamentos.png'
+    
+    
+        
+
+        
+        
         
      
 #Instanciando o banco de dados

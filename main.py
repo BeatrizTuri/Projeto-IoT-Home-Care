@@ -43,8 +43,18 @@ def exibir_dispositivos_online():
         
 
 if __name__ == "__main__":
+    #threading.Thread(target=simular_maquinas).start()
+    #bd.dispositivos_offline()
+    #bd.dispositivos_online_30m()
+    bd.grafico_equipamentos()
+    # bd.inserir_dispositivos(123456784, "2021-05-20 12:00:00")
+    # bd.inserir_mensagem("power_off", 123456784, "2021-05-20 12:00:00")
+    #bd.dispositivos_que_nao_reportam()
     
-    threading.Thread(target=simular_maquinas).start()
+    
+    
+    
+    
     #     # Inicia o site em uma thread separada, isso serve pra gnt iniciar o site direto, sem ter que ficar clicando em link
     # threading.Thread(target=inicia_site).start()
     
@@ -61,12 +71,13 @@ if __name__ == "__main__":
     # bd.inserir_erro("Erro de porta", 123456784, "2021-05-20 13:00:00")
     # bd.inserir_mensagem("Mensagem de teste", 123456784, "2021-05-20 12:00:00")
     # bd.inserir_mensagem("power", 123456784, "2021-05-20 12:00:00")
-    # bd.inserir_mensagem("power", 123456784, "2021-05-20 12:00:00")    
+    # bd.inserir_mensagem("timebased", 47837318, "2024-03-21 01:00:00")    
     # bd.remover_dispositivo(123456784)
     # bd.remover_erro(1)
     # bd.remover_mensagem(1)
     #bd.retorna_dispositivos()
     # bd.retorna_erro()
     # bd.retorna_mensagem()
-    app.run()
+    # app.run(debug=True)
+    
     
