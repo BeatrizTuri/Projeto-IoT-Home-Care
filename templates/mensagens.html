@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mensagens reportadas pelos dispositivos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        h1 {
+            color: #555;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        table {
+            border-collapse: collapse;
+            background-color: #f0f8ff;
+            border: 1px solid #b0c4de;
+            margin-top: 20px;
+            width: 80%; /* Ajuste a largura conforme necessário */
+            table-layout: fixed; /* Ajuda a manter a largura das colunas consistentes */
+        }
+        
+        th, td {
+            text-align: center; /* Centraliza o conteúdo das células */
+            padding: 8px;
+            border: 1px solid #b0c4de;
+        }
+        
+        th {
+            background-color: #add8e6;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #d3e0ea;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>mensagens reportadas pelos dispositivos</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tipo da mensagem</th>
+                    <th>IMEI</th>
+                    <th>Data da mensagem</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mensagem in lista_mensagens %}
+                    <tr>
+                        <td>{{ mensagem[0] }}</td>
+                        <td>{{ mensagem[1] }}</td>
+                        <td>{{ mensagem[2] }}</td>
+                        <td>{{ mensagem[3] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

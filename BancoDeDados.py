@@ -83,43 +83,7 @@ class BancoDeDados:
     método para inserir erros na tabela erro, onde é passado o tipo de erro, o IMEI do dispositivo e a data do erro, 
     não é preciso passar o id_erro pois ele é auto incremento.
     """
-    def inserir_erro(self, tipo_erro, fk_dispositivo_erro, data_erro):
-        
-        #Conexão com o banco de dados
-        self.conexao = mysql.connector.connect(
-            host=self.host,
-            user=self.usuario,
-            password=self.senha,
-            database=self.banco
-        )
-        
-        #Criação do cursor
-        cursor = self.conexao.cursor()
-        
-        #Recuperação do IMEI do dispositivo
-        query = "SELECT imei FROM dispositivo WHERE imei = %s"
-        cursor.execute(query, (fk_dispositivo_erro,))
-        
-        #Recuperação da proxima linha do resultado da consulta e atribuição a variavel imei_select
-        imei_select = cursor.fetchone() 
-
-        #Verificação se o dispositivo foi encontrado
-        if imei_select:
-            #Atribuição do IMEI do dispositivo selecionado ao fk_dispositivo_erro
-            fk_dispositivo_erro = imei_select[0]
-         
-        else:
-            print("Dispositivo não encontrado")
-
-        #Inserção de dados na tabela erro        
-        query = "INSERT INTO erro (tipo_erro, fk_dispositivo_erro, data_erro) VALUES (%s, %s, %s)"
-        cursor.execute(query, (tipo_erro, fk_dispositivo_erro, data_erro))
-        
-        #Confirmação da ação no banco
-        self.conexao.commit()
-        
-        #Fechamento do cursor
-        cursor.close()
+   
        
                
     """
@@ -387,9 +351,12 @@ class BancoDeDados:
         #Criação de uma variavel para armazenar a data atual menos 30 minutos
         menos_30_minutos = data_atual - timedelta(minutes=30)
         
+        #Formatação da data atual menos 30 minutos
+        menos_30_minutos_formatado = menos_30_minutos
+        
         #Recuperação dos dispositivos que estão online
         query = "SELECT fk_dispositivo_mensagem FROM mensagem WHERE data_mensagem > %s AND tipo_mensagem = %s"
-        cursor.execute(query, (menos_30_minutos, 'timebased'))
+        cursor.execute(query, (menos_30_minutos_formatado, 'timebased'))
         
         #Recuperação de todas as linhas do resultado da consulta e atribuição a variavel dispositivos
         dispositivos_on = cursor.fetchall()
@@ -398,7 +365,7 @@ class BancoDeDados:
         cursor.close()
         
         #Retorno dos dispositivos que estão online
-        return print(dispositivos_on)
+        return dispositivos_on
     
 
     """
@@ -477,26 +444,26 @@ class BancoDeDados:
                 status = "critical"
                 
                 #Adição dos resultados a lista
-                resultados.append((fk_dispositivo_mensagem, status, (tempo_sem_reportar.total_seconds()/ 60)))
+                resultados.append((fk_dispositivo_mensagem, status, round((tempo_sem_reportar.total_seconds()/ 60))))
               
             elif timedelta(hours=24) >= tempo_sem_reportar > timedelta(seconds=31):
                 status = "warning"
                 
                 #Adição dos resultados a lista
-                resultados.append((fk_dispositivo_mensagem, status, (tempo_sem_reportar.total_seconds()/ 60)))     
+                resultados.append((fk_dispositivo_mensagem, status, round((tempo_sem_reportar.total_seconds()/ 60))))    
         
         #Fechamento do cursor
         cursor.close()
 
         #Retorno dos resultados
-        return print(resultados)
+        return resultados
         
         
     """
     Método para exibir um gráfico mostrando todos os equipamentos ligados e todos os equipamentos desligados 
     (equipamentos que emitiram um poweroff como última mensagem).
     """
-    def grafico_equipamentos(self):  
+    def grafico_dispositivos(self):  
         #Conexão com o banco de dados
         conexao = mysql.connector.connect(
             host=self.host,
@@ -529,28 +496,21 @@ class BancoDeDados:
         values = [dispositivos_ligados, dispositivos_desligados]
         
         #Criação do gráfico
-        colors = ['blue', 'red']
+        colors = ['#add8e6', '#f88379']
         plt.bar(labels, values, color=colors)
         plt.xlabel('Estado dos Dispositivos')
         plt.ylabel('Quantidade')
         plt.title('Quantidade de Dispositivos Ligados e Desligados')
 
         #Salvamento do gráfico em um arquivo
-        plt.savefig('grafico_equipamentos.png')
+        plt.savefig('grafico_dispositivos.png')
         
         #Fechamento do cursor
         cursor.close()
 
         #Retorno do arquivo gerado
-        return 'grafico_equipamentos.png'
-    
-    
-        
-
-        
-        
-        
-     
+        return 'grafico_dispositivos.png'
+  
 #Instanciando o banco de dados
 bd = BancoDeDados()       
             
