@@ -4,11 +4,15 @@ import mysql.connector
 from mysql.connector import Error
 from bancoDeDados import *
 import threading
+import os
+import webbrowser
 from simuladorDeMaquinas import *
 
 #Instanciando o flask
 app = Flask(__name__)
 
+#Instancia o simulador de dispositivos
+simulador = SimulaDispositivo()
 
 #Função para iniciar o site
 @app.route('/')
@@ -51,20 +55,19 @@ def exibir_erros():
     return render_template("erros.html", lista_erros = erros)
 
 
-
-#Função para retornar o gráfico de dispositivos online e offline
+#Função para exibir o gráfico de dispositivos online e offline
 @app.route('/Grafico', methods=['GET'])
 def exibir_grafico():
     grafico = bd.grafico_dispositivos()
     return send_file(grafico, mimetype = 'image/png')
     
-
+    
 
 if __name__ == "__main__":
+    trhead_simulador = threading.Thread(target = simulador.inicia_simulacao_de_dispositivos)
+    trhead_simulador.start()
     
-    #threading.Thread(target=simular_maquinas).start()
-    # bd.grafico_dispositivos()
-    app.run(debug=True)
-    
+    app.run(debug=True, use_reloader=False, port=5000)
+
     
     

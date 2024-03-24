@@ -4,58 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bem-vindo ao Site do projeto Home Care</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            background-color: #007bff;
-            color: white;
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        a {
-            color: white;
-            text-decoration: none;
-            display: block;
-        }
-        a:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/styleHome.css">
+</head>
+<body>
+    <header>
+        <h1>HOME CARE</h1>
+    </header>
+    <div class="container">
 </head>
 <body>
     <div class="container">
-        <h1>Bem-vindo ao Site do projeto Home Care</h1>
+        <h2>Bem-vindo ao Site do projeto Home Care</h2>
         <p>Explore as funcionalidades da nossa API para gerenciamento de dispositivos:</p>
         <ul>
-            <li><a href="/Todos_dispositivos">Ver todos os dispositivos cadastrados</a></li>
-            <li><a href="/Mensagens">Ver todas as mensagens enviadas pelos dispositivos</a></li>
-            <li><a href="/Dispositivos_reportando">Ver dispositivos reportando</a></li>
-            <li><a href="/Dispositivos_nao_reportando">Ver dispositivos não reportando</a></li>
-            <li><a href="/Erros">Ver erros reportados pelos dispositivos</a></li>
-            <li><a href="/Grafico">Ver gráfico de dispositivos</a></li>
+            <li><a href="/Todos_dispositivos">Dispositivos Cadastrados</a></li>
+            <li><a href="/Mensagens">Mensagens</a></li>
+            <li><a href="/Dispositivos_reportando">Dispositivos Reportando</a></li>
+            <li><a href="/Dispositivos_nao_reportando">Dispositivos não Reportando</a></li>
+            <li><a href="/Erros">Erros</a></li>
+            <li><a href="/Grafico">Gráficos</a></li>
         </ul>
     </div>
+    <script>
+        function scrollToTop() {
+            window.scrollTo(0, 0);
+        }
+    </script>
 </body>
 </html>
