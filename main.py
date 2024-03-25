@@ -51,8 +51,21 @@ def exibir_dispositivos_nao_reportando():
 #Função para exibir os erros reportados
 @app.route('/Erros', methods=['GET'])
 def exibir_erros():
-    erros = bd.retorna_erros()
-    return render_template("erros.html", lista_erros = erros)
+    erros_sem_orientacao = bd.retorna_erros()
+    erros = []
+    
+    for erro in erros_sem_orientacao:
+        id, tipo_erro, imei, data = erro 
+        
+        if tipo_erro == "BAD_CONFIGURATION":
+            acao_recomendada = "Abrir chamado de assistência técnica"
+            
+        else:
+            acao_recomendada = "Reiniciar dispositivo" 
+       
+        erros.append((id, tipo_erro, imei, data, acao_recomendada))
+
+    return render_template("erros.html", lista_erros=erros)
 
 
 #Função para exibir o gráfico de dispositivos online e offline
@@ -66,6 +79,7 @@ def exibir_grafico():
 if __name__ == "__main__":
     trhead_simulador = threading.Thread(target = simulador.inicia_simulacao_de_dispositivos)
     trhead_simulador.start()
+    webbrowser.open("http://127.0.0.1:5000")
     
     app.run(debug=True, use_reloader=False, port=5000)
 

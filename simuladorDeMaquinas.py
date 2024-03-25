@@ -5,19 +5,8 @@ from bancoDeDados import *
 
 
 class SimulaDispositivo:
-    def __init__(self) :
-        
-        # Listas para armazenar IMEIs e tipos de mensagem
-        self.lista_de_IMEIS = []
-        self.lista_de_tipo_mensagem = []
-
-        # Número de dispositivos que não responderão
-        self.numero_de_dispositivos_nao_respondendo = 100
-
-        # Contador de self.loops
-        self.loops = 0
-
-    def randomiza_dispositivo(self):
+    @staticmethod
+    def gera_dispositivos_randomizados():
         # Gerando IMEI aleatório de 8 dígitos
         IMEI = int(random.randint(10000000,99999999))
 
@@ -26,66 +15,69 @@ class SimulaDispositivo:
         data_da_mensagem = datetime(2024, 3, 20, random.randint(0,int(datetime.now().strftime('%H'))), random.randint(0,int(datetime.now().strftime('%M'))), random.randint(0,int(datetime.now().strftime('%S'))))
         data_do_erro = datetime(2024, 3, random.randint(int(datetime.now().day) - 5, int(datetime.now().day)), random.randint(0,int(datetime.now().strftime('%H'))), random.randint(0,int(datetime.now().strftime('%M'))), random.randint(0,int(datetime.now().strftime('%S'))))
 
-        # Escolhendo aleatoriamente um tipo de erro
-        tipo_de_erro = random.choice(["MEMORY_FAILURE", "NETWORK_ERROR", "BAD_CONFIGURATION", "HARDWARE_ERROR", None, None, None, None, None, None, None, None, None, None])
+        # Probabilidades para cada tipo de erro
+        probabilidades_de_erro = {
+            "MEMORY_FAILURE": 0.05,
+            "NETWORK_ERROR": 0.05,
+            "BAD_CONFIGURATION": 0.05,
+            "HARDWARE_ERROR": 0.05,
+            None: 0.8  
+        }
+        # Gere aleatoriamente um tipo de erro com base nas probabilidades
+        tipo_de_erro = random.choices(list(probabilidades_de_erro.keys()), weights=list(probabilidades_de_erro.values()))[0]
 
-        # Escolhendo aleatoriamente um tipo de mensagem
-        tipo_mensagem = random.choice(["power_on", "timebased", "timebased"])
+        # Probabilidades para cada tipo de mensagem
+        probabilidades_de_mensagem = {
+            "power_on": 0.4,
+            "timebased": 0.6  
+        }
+        # Gere aleatoriamente um tipo de mensagem com base nas probabilidades
+        tipo_mensagem = random.choices(list(probabilidades_de_mensagem.keys()), weights=list(probabilidades_de_mensagem.values()))[0]
 
         # Inserindo dados no banco de dados
         bd.inserir_dispositivos(IMEI, str(data_de_fabricacao))
         
+        # Verifica se houve erro e insere no banco de dados
         if tipo_de_erro != None:
             bd.inserir_erro(tipo_de_erro, IMEI, str(data_do_erro))
         
+        # Inserindo mensagens no banco de dados
         bd.inserir_mensagem(tipo_mensagem, IMEI, str(data_da_mensagem))  
 
-        return IMEI, tipo_mensagem
+    @staticmethod
+    def atualizar_maquinas(imei, mensagem_anterior):
+        # Escolhendo aleatoriamente um tipo de mensagem com chance iguais
+        tipo_mensagem = random.choice(["power_on","power_off", "timebased"])
 
-    def atualizar_maquinas(self):
-        # Iterando sobre os IMEIs
-        for imei in range(self.numero_de_dispositivos_nao_respondendo,len(self.lista_de_IMEIS)):
-            # Escolhendo aleatoriamente um tipo de mensagem
-            tipo_mensagem = random.choice(["power_on","power_off", "timebased"])
+        # Atualizando mensagens de acordo com o tipo de mensagem anterior
+        if tipo_mensagem == "power_off" and mensagem_anterior != "power_off":
+            bd.atualiza_mensagem(imei, tipo_mensagem)
 
-            # Atualizando mensagens de acordo com o tipo de mensagem anterior
-            if tipo_mensagem == "power_off" and self.lista_de_tipo_mensagem[imei] != "power_off":
-                tipo_mensagem = "power_off"
-                bd.atualiza_mensagem(self.lista_de_IMEIS[imei], tipo_mensagem)
+        elif tipo_mensagem == "power_on" and mensagem_anterior == "power_off":
+            bd.atualiza_mensagem(imei, tipo_mensagem)
 
-                # Atualizando o tipo de mensagem na lista
-                self.lista_de_tipo_mensagem[imei] = tipo_mensagem
+        elif tipo_mensagem == "timebased" and mensagem_anterior != "power_off":
+            bd.atualiza_mensagem(imei, tipo_mensagem)
 
-            elif tipo_mensagem == "power_on" and self.lista_de_tipo_mensagem[imei] == "power_off":
-                tipo_mensagem = "power_on"
-                bd.atualiza_mensagem(self.lista_de_IMEIS[imei], tipo_mensagem)
+    @staticmethod
+    def inicia_simulacao_de_dispositivos():
+        # Verifica se o banco de dados está vazio para a criação do simulador
+        if bd.retorna_mensagens() == []:
+            # Gera 1000 dispositivos aleatórios
+            for _ in range(0, 1000):
+                # Gera os dispositivos
+                SimulaDispositivo.gera_dispositivos_randomizados()
 
-                # Atualizando o tipo de mensagem na lista
-                self.lista_de_tipo_mensagem[imei] = tipo_mensagem
-
-            elif tipo_mensagem == "timebased" and self.lista_de_tipo_mensagem[imei] != "power_off":
-                tipo_mensagem = "timebased"
-                bd.atualiza_mensagem(self.lista_de_IMEIS[imei], tipo_mensagem)
-
-                # Atualizando o tipo de mensagem na lista
-                self.lista_de_tipo_mensagem[imei] = tipo_mensagem
-
-    def inicia_simulacao_de_dispositivos(self):
         while True:
-            #Gera dispositivos que não responderão
-            if self.loops < self.numero_de_dispositivos_nao_respondendo: 
-                self.randomiza_dispositivo()
+            # Retorna a lista de mensagens e embaralha ela para que a ordem de atualização seja aleatória e
+            # garanta que algumas máquinas não responderão
+            lista_de_mensagens = bd.retorna_mensagens()
+            random.shuffle(lista_de_mensagens)
 
-            #Gera dispositivos que responderão
-            elif self.loops > self.numero_de_dispositivos_nao_respondendo and self.loops <= 900: 
-                imei, mensagens = self.randomiza_dispositivo()
-                self.lista_de_IMEIS.append(imei)
-                self.lista_de_tipo_mensagem.append(mensagens)
+            # Atualiza a mensagem de quase todos os dispositivos, garantindo que alguns não responderão
+            for parametro in range(0, int(len(lista_de_mensagens) - 100)):
+                #Atualiza a mensagem dos dispositivos com base no imei e mensagem anterior
+                SimulaDispositivo.atualizar_maquinas(lista_de_mensagens[parametro][2], lista_de_mensagens[parametro][1])
 
-            #Atualiza a mensagem dos dispositivos
-            else: 
-                self.atualizar_maquinas()
-                # Aguardando 30 segundos antes da próxima iteração
-                time.sleep(30)
-
-            self.loops += 1
+            # Aguardando 30 segundos antes da próxima iteração
+            time.sleep(30)

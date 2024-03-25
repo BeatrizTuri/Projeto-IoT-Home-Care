@@ -254,6 +254,35 @@ class BancoDeDados:
         #Retorno das mensagens inseridas
         return mensagens
     
+    """
+    Método para retornar os imeis cadastrados na tabela dispositivios
+    """   
+    def retorna_imeis(self):
+        
+        #Conexão com o banco de dados
+        self.conexao = mysql.connector.connect(
+            host=self.host,
+            user=self.usuario,
+            password=self.senha,
+            database=self.banco
+        )
+        
+        #Criação do cursor
+        cursor = self.conexao.cursor()
+        
+        #Recuperação dos imeis cadastrados no banco de dados
+        query = "SELECT imei FROM dispositivo"
+        cursor.execute(query)
+        
+        #Recuperação de todas as linhas do resultado da consulta e atribuição a variavel imeis
+        imeis = cursor.fetchall()
+      
+        #Fechamento do cursor
+        cursor.close()
+        
+        #Retorno dos imeis inseridos
+        return imeis
+        
     
     """
     Método para remover dispositivos cadastrados na tabela dispositivo através do IMEI
@@ -387,12 +416,9 @@ class BancoDeDados:
         #Criação de uma variavel para armazenar a data atual menos 30 minutos
         menos_30_minutos = data_atual - timedelta(minutes=30)
         
-        #Formatação da data atual menos 30 minutos
-        menos_30_minutos_formatado = menos_30_minutos
-        
         #Recuperação dos dispositivos que estão online
-        query = "SELECT fk_dispositivo_mensagem FROM mensagem WHERE data_mensagem > %s AND tipo_mensagem = %s"
-        cursor.execute(query, (menos_30_minutos_formatado, 'timebased'))
+        query = "SELECT * FROM mensagem WHERE data_mensagem > %s AND tipo_mensagem = %s"
+        cursor.execute(query, (menos_30_minutos, 'timebased'))
         
         #Recuperação de todas as linhas do resultado da consulta e atribuição a variavel dispositivos
         dispositivos_on = cursor.fetchall()
