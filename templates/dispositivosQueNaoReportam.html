@@ -24,12 +24,11 @@
                 {% for dispositivo in lista_dispositivos_que_nao_reportam %}
                     <tr>
                         <td>{{ dispositivo[0] }}</td>
-                        <td class="{{ 'text-warning' if dispositivo[1] == 'warning' else 'text-critical' if dispositivo[1] == 'critical' else '' }}">{{ dispositivo[1] }}</td>
+                        <td>{{ dispositivo[1] }}</td>
                         <td>{{ dispositivo[2] }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
-            
         </table>
     </div>
     <script>

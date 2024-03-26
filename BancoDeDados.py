@@ -1,6 +1,4 @@
 from datetime import datetime, timedelta
-import os
-import time
 import mysql.connector 
 from mysql.connector import Error
 import matplotlib.pyplot as plt
@@ -46,10 +44,7 @@ class BancoDeDados:
         #Impressão de erro caso a conexão com o banco de dados falhe
         except Error as e:
             print("Erro ao conectar com o banco de dados", e)
-        
-        #0.5 segundos para sincronização
-        time.sleep(0.5)
-
+            
             
     """
     Método para inserir dispositivos na tabela dispositivo, onde é passado o IMEI e a data de fabricação do dispositivo.
@@ -568,10 +563,6 @@ class BancoDeDados:
         plt.xlabel('Estado dos Dispositivos')
         plt.ylabel('Quantidade')
         plt.title('Quantidade de Dispositivos Ligados e Desligados')
-        
-        #Exclusão do arquivo do gráfico, se já existir
-        if os.path.exists('grafico_dispositivos.png'):
-            os.remove('grafico_dispositivos.png')
 
         #Salvamento do gráfico em um arquivo
         plt.savefig('grafico_dispositivos.png')
