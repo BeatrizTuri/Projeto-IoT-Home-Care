@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dispositivos que reportaram nos ultimos 30 minutos</title>
+    <link rel="stylesheet" href="/static/styleDispositivosQueReportam.css">
+</head>
+<body>
+    <header>
+        <a href="/" class="btn-voltar">&#8592;</a>
+        <h1>Dispositivos que reportaram nos ultimos 30 minutos</h1>
+    </header>
+</head>
+<body>
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>IMEI</th>
+                    <th>Data da Mensagem</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dispositivo in lista_dispositivos_que_reportam %}
+                    <tr>
+                        <td>{{ dispositivo[0] }}</td>
+                        <td>{{ dispositivo[1] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script>
+        function scrollToTop() {
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mensagens reportadas pelos dispositivos</title>
+    <link rel="stylesheet" href="/static/styleMensagens.css">
+</head>
+<body>
+    <header>
+        <a href="/" class="btn-voltar">&#8592;</a>
+        <h1>Mensagens enviadas pelos dispositivos</h1>
+    </header>
+    <div class="container">
+</head>
+<body>
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tipo da mensagem</th>
+                    <th>IMEI</th>
+                    <th>Data da mensagem</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mensagem in lista_mensagens %}
+                    <tr>
+                        <td>{{ mensagem[0] }}</td>
+                        <td>{{ mensagem[1] }}</td>
+                        <td>{{ mensagem[2] }}</td>
+                        <td>{{ mensagem[3] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script>
+        function scrollToTop() {
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>

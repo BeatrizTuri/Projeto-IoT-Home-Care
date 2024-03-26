@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dispositivos que não estão reportando</title>
+    <link rel="stylesheet" href="/static/styleDispositivosQueNaoReportam.css">
+</head>
+<body>
+    <header>
+        <a href="/" class="btn-voltar">&#8592;</a>
+        <h1>Dispositivos que não estão reportando</h1>
+    </header>
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>IMEI</th>
+                    <th>Status</th>
+                    <th>Tempo sem reportar em minutos</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dispositivo in lista_dispositivos_que_nao_reportam %}
+                    <tr>
+                        <td>{{ dispositivo[0] }}</td>
+                        <td>{{ dispositivo[1] }}</td>
+                        <td>{{ dispositivo[2] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script>
+        function scrollToTop() {
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
