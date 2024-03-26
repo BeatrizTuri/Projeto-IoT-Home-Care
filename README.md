@@ -108,11 +108,4 @@ Exemplo:
 "Melhora a formatação do código de acordo com as diretrizes de estilo"
 
 
-## Modelo de Branchs Neste Projeto
-Neste projeto, estou adotando o GitFlow como nosso modelo de fluxo de trabalho para gerenciar o desenvolvimento e a entrega de software de forma eficiente e organizada.
-
-### Ramificações Principais
-- *Master*: A ramificação "master" é a principal linha de desenvolvimento. Ela contém apenas versões estáveis e testadas do software.
-
-- *Develop*: A ramificação "develop" é onde o desenvolvimento ativo ocorre. Todas as novas funcionalidades e correções de bugs são implementadas aqui.
 
