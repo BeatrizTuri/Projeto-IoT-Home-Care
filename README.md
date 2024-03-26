@@ -4,21 +4,6 @@
 ## Descrição do Projeto
 Este projeto é um sistema de IoT desenvolvido especificamente para o setor de home care, visando otimizar o monitoramento e a manutenção de diversos dispositivos. O sistema é capaz de receber, armazenar e processar dados em tempo real, provenientes de milhares de equipamentos.
 
-## Biblioteca
-Para poder rodar o código, é preciso fazer o pip install das bibliotecas abaixo:
-
- ```python
- pip install flask
- ```
-
- ```python
- pip install mysql-connector-python
- ```
-
- ```python
- pip install matplotlib
- ```
-
 ## Instrução de compilação 
  1- Para poder executar o código é preciso que você tenha instalado o mysql com todas as suas pendências. Acesse o seu root utilizando o comando abaixo:
 
