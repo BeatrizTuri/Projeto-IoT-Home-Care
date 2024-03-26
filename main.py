@@ -92,9 +92,6 @@ if __name__ == "__main__":
     if not os.environ.get("WERKZEUG_RUN_MAIN"): #Executa apenas uma vez
         webbrowser.open("http://127.0.0.1:5000")
 
-
-
-
     app.run(debug=True)
 
     

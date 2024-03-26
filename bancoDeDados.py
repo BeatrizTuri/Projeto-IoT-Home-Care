@@ -569,12 +569,12 @@ class BancoDeDados:
         plt.ylabel('Quantidade')
         plt.title('Quantidade de Dispositivos Ligados e Desligados')
 
-        #Salvamento do gráfico em um arquivo
-        plt.savefig('grafico_dispositivos.png')
-        
         #Exclusão do arquivo do gráfico, se já existir
         if os.path.exists('grafico_dispositivos.png'):
             os.remove('grafico_dispositivos.png')
+        
+        #Salvamento do gráfico em um arquivo
+        plt.savefig('grafico_dispositivos.png')
         
         #Fechamento do cursor
         cursor.close()
