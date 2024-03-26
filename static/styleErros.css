@@ -65,3 +65,19 @@ tr:nth-child(even) {
     cursor: pointer;
     text-decoration: none;
 }
+.bad-config {
+    position: relative;
+}
+
+.bad-config::before {
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    position: absolute;
+    left: -15px;
+    top: 50%;
+    transform: translateY(-50%);
+}

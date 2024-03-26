@@ -60,8 +60,15 @@ def exibir_erros():
         if tipo_erro == "BAD_CONFIGURATION":
             acao_recomendada = "Abrir chamado de assistência técnica"
             
+        elif tipo_erro == "HARDWARE_ERROR":
+            acao_recomendada = "Realize um diagnóstico de hardware" 
+            
+        elif tipo_erro == "MEMORY_FAILURE":
+            acao_recomendada = "Cheque a memória do dispositivo"
+            
         else:
-            acao_recomendada = "Reiniciar dispositivo" 
+            acao_recomendada = "Verificar conexão de rede"
+        
        
         erros.append((id, tipo_erro, imei, data, acao_recomendada))
 
@@ -77,11 +84,18 @@ def exibir_grafico():
     
 
 if __name__ == "__main__":
-    trhead_simulador = threading.Thread(target = simulador.inicia_simulacao_de_dispositivos)
-    trhead_simulador.start()
-    webbrowser.open("http://127.0.0.1:5000")
-    
-    app.run(debug=True, use_reloader=False, port=5000)
+    #Iniciando a simulação de dispositivos em uma thread separada
+    thread_simulador = threading.Thread(target=simulador.inicia_simulacao_de_dispositivos)
+    thread_simulador.start()
+
+    #Iniciando o servidor
+    if not os.environ.get("WERKZEUG_RUN_MAIN"): #Executa apenas uma vez
+        webbrowser.open("http://127.0.0.1:5000")
+
+
+
+
+    app.run(debug=True)
 
     
     

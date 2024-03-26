@@ -17,18 +17,18 @@
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>Id do erro</th>
                     <th>Tipo do erro</th>
                     <th>IMEI</th>
                     <th>Data do erro</th>
-                    <th>Açao recomendada</th>
+                    <th>Ação recomendada</th> 
                 </tr>
             </thead>
             <tbody>
                 {% for erro in lista_erros %}
                     <tr>
                         <td>{{ erro[0] }}</td>
-                        <td>{{ erro[1] }}</td>
+                        <td class="{% if erro[1] == 'BAD_CONFIGURATION' %}bad-config{% endif %}">{{ erro[1] }}</td>
                         <td>{{ erro[2] }}</td>
                         <td>{{ erro[3] }}</td>
                         <td>{{ erro[4] }}</td>

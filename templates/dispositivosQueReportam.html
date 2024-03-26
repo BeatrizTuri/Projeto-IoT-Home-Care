@@ -17,8 +17,10 @@
         <table>
             <thead>
                 <tr>
+                    <th>ID</th>
+                    <th>Tipo da mensagem</th>
                     <th>IMEI</th>
-                    <th>Data da Mensagem</th>
+                    <th>Data da mensagem</th>
                 </tr>
             </thead>
             <tbody>
@@ -26,6 +28,8 @@
                     <tr>
                         <td>{{ dispositivo[0] }}</td>
                         <td>{{ dispositivo[1] }}</td>
+                        <td>{{ dispositivo[2] }}</td>
+                        <td>{{ dispositivo[3] }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

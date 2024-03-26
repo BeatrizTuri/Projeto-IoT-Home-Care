@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import os
 import time
 import mysql.connector 
 from mysql.connector import Error
@@ -570,6 +571,10 @@ class BancoDeDados:
 
         #Salvamento do gráfico em um arquivo
         plt.savefig('grafico_dispositivos.png')
+        
+        #Exclusão do arquivo do gráfico, se já existir
+        if os.path.exists('grafico_dispositivos.png'):
+            os.remove('grafico_dispositivos.png')
         
         #Fechamento do cursor
         cursor.close()
