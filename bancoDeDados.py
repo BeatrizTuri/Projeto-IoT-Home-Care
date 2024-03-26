@@ -47,7 +47,7 @@ class BancoDeDados:
             print("Erro ao conectar com o banco de dados", e)
         
         #0.5 segundos para a sincronização do banco de dados    
-        time.sleep(5)
+        time.sleep(0.5)
             
             
     """
