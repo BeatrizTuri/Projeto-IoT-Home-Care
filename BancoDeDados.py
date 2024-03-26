@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-import time
 import mysql.connector 
 from mysql.connector import Error
 import matplotlib.pyplot as plt
@@ -45,9 +44,6 @@ class BancoDeDados:
         #Impressão de erro caso a conexão com o banco de dados falhe
         except Error as e:
             print("Erro ao conectar com o banco de dados", e)
-        
-        #0.5 segundos para a sincronização do banco de dados    
-        time.sleep(5)
             
             
     """
