@@ -1,6 +1,4 @@
 from flask import Flask, render_template, request, jsonify, send_file
-import flask_sqlalchemy  
-import mysql.connector 
 from mysql.connector import Error
 from bancoDeDados import *
 import threading
